@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betting Odds Trainer</title>
+    <style>
+        
+        .settings {
+            margin: 30px 0;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .settings h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #495057;
+        }
+        
+        .setting-group {
+            margin: 15px 0;
+        }
+        
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .toggle-label:hover {
+            background-color: #e9ecef;
+        }
+        
+        .toggle-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        
+        .toggle-text {
+            flex: 1;
+        }body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .hud-left, .hud-right {
+            position: absolute;
+            top: -40px;
+        }
+        
+        .hud-left {
+            left: -40px;
+        }
+        
+        .hud-right {
+            right: -40px;
+        }
+        
+        .score {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        
+        .stat {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .timer {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #28a745;
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .timer.warning {
+            color: #ffc107;
+        }
+        
+        .timer.danger {
+            color: #dc3545;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .question {
+            font-size: 2.5em;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .input-section {
+            margin: 20px 0;
+        }
+        
+        input {
+            font-size: 1.5em;
+            padding: 15px;
+            width: 200px;
+            text-align: center;
+            border: 3px solid #dee2e6;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+        }
+        
+        .correct {
+            border-color: #28a745 !important;
+            background: #d4edda;
+        }
+        
+        .incorrect {
+            border-color: #dc3545 !important;
+            background: #f8d7da;
+        }
+        
+        button {
+            font-size: 1.2em;
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .start-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .score-breakdown {
+            text-align: left;
+            margin-top: 20px;
+        }
+        
+        .feedback {
+            font-size: 1.1em;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .feedback.close {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Betting Odds Trainer</h1>
+        
+        <div id="gameSetup">
+            <p>Convert betting odds to implied probabilities as quickly as possible!</p>
+            <p>Enter your answer as a percentage rounded to the nearest whole number (e.g., 67)</p>
+            
+            <div class="settings">
+                <h3>Question Types</h3>
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="americanOdds" checked>
+                        <span class="toggle-text">American Odds (+150, -200)</span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="fractionalOdds" checked>
+                        <span class="toggle-text">Fractional Odds (3 to 1, 2 to 5)</span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="profitOdds" checked>
+                        <span class="toggle-text">Profit Odds (1 to profit 3)</span>
+                    </label>
+                </div>
+            </div>
+            
+            <button class="start-btn" onclick="startGame()">Start 2-Minute Challenge</button>
+        </div>
+        
+        <div id="gamePlay" class="hidden">
+            <div class="hud">
+                <div class="hud-left">
+                    <div id="timer" class="timer">2:00</div>
+                </div>
+                <div class="hud-right">
+                    <div class="score">Score: <span id="score">0</span></div>
+                </div>
+            </div>
+            
+            <div class="question" id="question">+150</div>
+            
+            <div class="input-section">
+                <input type="number" id="answer" placeholder="%" step="1" min="0" max="100" 
+                       autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                       data-form-type="other" name="betting-answer">
+                <div id="feedback" class="feedback hidden"></div>
+            </div>
+        </div>
+        
+        <div id="gameResults" class="hidden">
+            <div class="results">
+                <h2>Game Complete!</h2>
+                <div id="finalScore"></div>
+                <div id="scoreBreakdown" class="score-breakdown"></div>
+                <button class="start-btn" onclick="resetGame()">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = {
+            timeLeft: 120,
+            score: 0,
+            currentAnswer: 0,
+            timer: null,
+            gameActive: false,
+            enabledOddsTypes: []
+        };
+
+        const oddsTypes = [
+            // American odds
+            () => {
+                const positive = Math.random() > 0.5;
+                if (positive) {
+                    const odds = [100, 110, 120, 130, 140, 150, 160, 175, 180, 200, 220, 250, 275, 300, 325, 350, 375, 400, 450, 500][Math.floor(Math.random() * 20)];
+                    return {
+                        display: `+${odds}`,
+                        probability: 100 / (100 + odds) * 100
+                    };
+                } else {
+                    const odds = [110, 120, 130, 140, 150, 160, 175, 180, 190, 200, 220, 225, 240, 250, 275, 300, 320, 350, 375, 400][Math.floor(Math.random() * 20)];
+                    return {
+                        display: `-${odds}`,
+                        probability: odds / (odds + 100) * 100
+                    };
+                }
+            },
+            
+            // Fractional odds (X to Y)
+            () => {
+                const fractions = [
+                    [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [2, 3], [2, 5], [2, 7],
+                    [3, 4], [3, 5], [3, 2], [4, 3], [4, 5], [5, 2], [5, 3], [5, 4],
+                    [6, 1], [7, 1], [7, 2], [8, 1], [9, 1], [10, 1]
+                ];
+                const [x, y] = fractions[Math.floor(Math.random() * fractions.length)];
+                return {
+                    display: `${x} to ${y}`,
+                    probability: y / (x + y) * 100
+                };
+            },
+            
+            // Profit odds (X to profit Y)
+            () => {
+                const profitOdds = [
+                    [1, 1], [1, 2], [1, 3], [1, 4], [2, 1], [2, 3], [3, 1], [3, 2],
+                    [4, 1], [4, 3], [5, 1], [5, 2], [5, 3], [6, 1], [7, 1], [8, 1]
+                ];
+                const [bet, profit] = profitOdds[Math.floor(Math.random() * profitOdds.length)];
+                return {
+                    display: `${bet} to profit ${profit}`,
+                    probability: bet / (bet + profit) * 100
+                };
+            }
+        ];
+
+        function generateQuestion() {
+            if (gameState.enabledOddsTypes.length === 0) return;
+            
+            const generator = gameState.enabledOddsTypes[Math.floor(Math.random() * gameState.enabledOddsTypes.length)];
+            const question = generator();
+            gameState.currentAnswer = Math.round(question.probability);
+            document.getElementById('question').textContent = question.display;
+        }
+
+        function getEnabledOddsTypes() {
+            const enabledTypes = [];
+            
+            if (document.getElementById('americanOdds').checked) {
+                enabledTypes.push(oddsTypes[0]); // American odds
+            }
+            if (document.getElementById('fractionalOdds').checked) {
+                enabledTypes.push(oddsTypes[1]); // Fractional odds
+            }
+            if (document.getElementById('profitOdds').checked) {
+                enabledTypes.push(oddsTypes[2]); // Profit odds
+            }
+            
+            return enabledTypes;
+        }
+
+        function startGame() {
+            const enabledTypes = getEnabledOddsTypes();
+            if (enabledTypes.length === 0) {
+                alert('Please select at least one question type!');
+                return;
+            }
+            
+            gameState = {
+                timeLeft: 120,
+                score: 0,
+                currentAnswer: 0,
+                timer: null,
+                gameActive: true,
+                enabledOddsTypes: enabledTypes
+            };
+            
+            document.getElementById('gameSetup').classList.add('hidden');
+            document.getElementById('gamePlay').classList.remove('hidden');
+            document.getElementById('gameResults').classList.add('hidden');
+            
+            generateQuestion();
+            document.getElementById('answer').focus();
+            
+            gameState.timer = setInterval(updateTimer, 100);
+            
+            // Auto-submit functionality
+            document.getElementById('answer').addEventListener('input', autoCheckAnswer);
+        }
+
+        function updateTimer() {
+            gameState.timeLeft -= 0.1;
+            const minutes = Math.floor(gameState.timeLeft / 60);
+            const seconds = (gameState.timeLeft % 60).toFixed(1);
+            const display = `${minutes}:${seconds.padStart(4, '0')}`;
+            
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = display;
+            
+            if (gameState.timeLeft <= 30) {
+                timerEl.className = 'timer danger';
+            } else if (gameState.timeLeft <= 60) {
+                timerEl.className = 'timer warning';
+            }
+            
+            if (gameState.timeLeft <= 0) {
+                endGame();
+            }
+        }
+
+        function autoCheckAnswer() {
+            if (!gameState.gameActive) return;
+            
+            const userInput = document.getElementById('answer').value;
+            const userAnswer = parseInt(userInput);
+            
+            // Check if the input is a valid whole number
+            if (userInput && !isNaN(userAnswer) && userAnswer >= 0 && userAnswer <= 100) {
+                // For whole numbers, check if they've entered 1-3 digits
+                if (userInput.length >= 1 && (userInput.length >= 2 || userAnswer < 10)) {
+                    // Small delay to prevent accidental submissions
+                    setTimeout(() => {
+                        if (document.getElementById('answer').value === userInput && gameState.gameActive) {
+                            checkAnswer();
+                        }
+                    }, 200);
+                }
+            }
+        }
+
+        function checkAnswer() {
+            if (!gameState.gameActive) return;
+            
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const correct = gameState.currentAnswer;
+            
+            if (userAnswer === correct) {
+                // Correct answer - move to next question
+                gameState.score++;
+                showFeedback(`Correct! ${correct}%`, 'correct');
+                updateStats();
+                generateQuestion();
+                document.getElementById('answer').value = '';
+            }
+            // If wrong, do nothing - let user keep typing
+        }
+
+        function showFeedback(text, type) {
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = text;
+            feedbackEl.className = `feedback ${type}`;
+            feedbackEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                feedbackEl.classList.add('hidden');
+            }, 1500);
+        }
+
+        function updateStats() {
+            document.getElementById('score').textContent = gameState.score;
+        }
+
+        function endGame() {
+            gameState.gameActive = false;
+            clearInterval(gameState.timer);
+            
+            document.getElementById('gamePlay').classList.add('hidden');
+            document.getElementById('gameResults').classList.remove('hidden');
+            
+            const score = gameState.score;
+            
+            document.getElementById('finalScore').innerHTML = `
+                <h3>Final Score: ${score} questions solved!</h3>
+                <p>You solved ${score} betting odds in 2 minutes</p>
+            `;
+            
+            // Show performance message
+            let performanceMsg = '';
+            if (score >= 30) performanceMsg = 'Outstanding! 🔥';
+            else if (score >= 20) performanceMsg = 'Excellent work! 👏';
+            else if (score >= 15) performanceMsg = 'Great job! 👍';
+            else if (score >= 10) performanceMsg = 'Good effort! 💪';
+            else performanceMsg = 'Keep practicing! 📚';
+            
+            document.getElementById('scoreBreakdown').innerHTML = `<h4>${performanceMsg}</h4>`;
+        }
+
+        function resetGame() {
+            document.getElementById('gameResults').classList.add('hidden');
+            document.getElementById('gameSetup').classList.remove('hidden');
+            document.getElementById('timer').className = 'timer';
+        }
+
+        // Auto-focus on answer input when game is active
+        document.addEventListener('click', function() {
+            if (gameState.gameActive) {
+                document.getElementById('answer').focus();
+            }
+        });
+    </script>
+</body>
+</html>
